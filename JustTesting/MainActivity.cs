@@ -24,6 +24,11 @@ using SFile = System.IO.File;
  * play gifs in viewpager! what is needed?
  * video support?
  * sorting options: folder, date, size, etc(tags); ascending, descending
+ * 
+ * 
+ * ERRORS:
+ *      -position is 0 at the last item during rendering gridview!!!
+ * 
  */
 
 
@@ -62,12 +67,12 @@ namespace JustTesting
 
             SwitchView("gallery_1");
 
-            File picDir = Android.OS.Environment.GetExternalStoragePublicDirectory(Android.OS.Environment.DirectoryDownloads);
-            pictureList = new List<File>(GetPictures(picDir));
-            gallerygrid_1 = FindViewById<GridView>(Resource.Id.gridView1);
-            gallerygrid_1.SetColumnWidth(Resources.DisplayMetrics.WidthPixels / 3);
-            gallerygrid_1.Adapter = new ImageAdapter(this);
-            gallerygrid_1.ItemClick += Gallerygrid_1_ItemClick;
+            //File picDir = Android.OS.Environment.GetExternalStoragePublicDirectory(Android.OS.Environment.DirectoryDownloads);
+            //pictureList = new List<File>(GetPictures(picDir));
+            //gallerygrid_1 = FindViewById<GridView>(Resource.Id.gridView1);
+            //gallerygrid_1.SetColumnWidth(Resources.DisplayMetrics.WidthPixels / 3);
+            //gallerygrid_1.Adapter = new ImageAdapter(this);
+            //gallerygrid_1.ItemClick += Gallerygrid_1_ItemClick;
 
             
         }
@@ -235,7 +240,12 @@ namespace JustTesting
             }
             else if (id == Resource.Id.nav_share)
             {
-
+                File picDir = Android.OS.Environment.GetExternalStoragePublicDirectory(Android.OS.Environment.DirectoryDownloads);
+                pictureList = new List<File>(GetPictures(picDir));
+                gallerygrid_1 = FindViewById<GridView>(Resource.Id.gridView1);
+                gallerygrid_1.SetColumnWidth(Resources.DisplayMetrics.WidthPixels / 3);
+                gallerygrid_1.Adapter = new ImageAdapter(this);
+                gallerygrid_1.ItemClick += Gallerygrid_1_ItemClick;
             }
             else if (id == Resource.Id.nav_send)
             {

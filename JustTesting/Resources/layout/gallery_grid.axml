@@ -14,5 +14,5 @@
 	android:verticalSpacing="1dp"
 	android:horizontalSpacing="1dp"
 	android:gravity="center" 
-	android:paddingTop="?android:attr/actionBarSize" />
+	android:paddingTop="35dp" />
 </LinearLayout>
