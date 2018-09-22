@@ -2612,6 +2612,9 @@ namespace JustTesting
 			// aapt resource value: 0x7f0800b6
 			public const int imageView1 = 2131230902;
 			
+			// aapt resource value: 0x7f080091
+			public const int imageView_DEBUG = 2131230865;
+			
 			// aapt resource value: 0x7f0800a1
 			public const int imageView_forgrid = 2131230881;
 			
@@ -2869,9 +2872,6 @@ namespace JustTesting
 			
 			// aapt resource value: 0x7f0800a2
 			public const int textView = 2131230882;
-			
-			// aapt resource value: 0x7f080091
-			public const int textView1 = 2131230865;
 			
 			// aapt resource value: 0x7f08009f
 			public const int text_input_password_toggle = 2131230879;

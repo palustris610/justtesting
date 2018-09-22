@@ -12,6 +12,7 @@ using Android.Views;
 using Android.Widget;
 using Java.Lang;
 using Object = Java.Lang.Object;
+using ANUri = Android.Net.Uri;
 
 namespace JustTesting
 {
@@ -50,7 +51,7 @@ namespace JustTesting
             layoutInf = (LayoutInflater)context.GetSystemService(Context.LayoutInflaterService);
             View vw = layoutInf.Inflate(Resource.Layout.picture_content, null);
             ImageView imgView = (ImageView)vw.FindViewById(Resource.Id.imageView1);
-            imgView.SetImageURI(Android.Net.Uri.Parse(GetItem(position).ToString()));
+            imgView.SetImageURI((ANUri)GetItem(position));
 
             ViewPager vp = (ViewPager)container;
             vp.AddView(vw, 0);

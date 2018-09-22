@@ -59,6 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ImageAdapter.cs" />
+    <Compile Include="ImageResizer.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="PictureActivity.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />

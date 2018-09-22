@@ -9,12 +9,17 @@
 	tools:showIn="@layout/app_bar_main"
 	android:minWidth="25px"
 	android:minHeight="25px">
-	<TextView
+	<!--TextView
 		android:gravity="left"
 		android:layout_height="fill_parent"
 		android:layout_width="wrap_content"
 		android:singleLine="false"
-		android:id="@+id/textView1" />
+		android:id="@+id/textView1" /-->
+	<ImageView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:id="@+id/imageView_DEBUG" />
+	
 	
 	
 </RelativeLayout>

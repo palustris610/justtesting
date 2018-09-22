@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using Android;
 using Android.App;
 using Android.Content;
+using Android.Database;
 using Android.Graphics;
 using Android.OS;
+using Android.Provider;
 using Android.Support.Design.Widget;
 using Android.Support.V4.View;
 using Android.Support.V4.Widget;
@@ -13,6 +15,8 @@ using Android.Views;
 using Android.Widget;
 using Java.IO;
 using SFile = System.IO.File;
+using Thumbnails = Android.Provider.MediaStore.Images.Thumbnails;
+using ANUri = Android.Net.Uri;
 
 /* USEFUL STUFF:
  * https://www.youtube.com/watch?v=gOQnzTBR7wA - gridview + open single pic
@@ -24,11 +28,11 @@ using SFile = System.IO.File;
  * play gifs in viewpager! what is needed?
  * video support?
  * sorting options: folder, date, size, etc(tags); ascending, descending
- * 
+ * -refine thumbnails! save them to file? create a serialized collection for faster read, then analyze in background?
  * 
  * ERRORS:
  *      -position is 0 at the last item during rendering gridview!!!
- * 
+ *      -out of memory really fast! -> create thumbs for gridview! -> out of memory later
  */
 
 
@@ -41,7 +45,9 @@ namespace JustTesting
         LinearLayout galleryView;
         GridView gallerygrid_1;
 
-        public static List<File> pictureList;
+        public static List<ANUri> pictureList;
+        public static File picDir;
+
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -77,9 +83,9 @@ namespace JustTesting
             
         }
 
-        private List<File> GetPictures(File storage)
+        private List<ANUri> GetPictures(File storage)
         {
-            List<File> pictureList = new List<File>();
+            List<ANUri> pictureList = new List<ANUri>();
 
             string writeperm = Manifest.Permission.WriteExternalStorage;
             if (CheckSelfPermission(writeperm) != Android.Content.PM.Permission.Granted)
@@ -109,7 +115,7 @@ namespace JustTesting
                 {
                     if (IsFilePicture(file.Name)) //filter!
                     {
-                        pictureList.Add(file);
+                        pictureList.Add(ANUri.FromFile(file));
                     }
                 }
                 else if (file.IsDirectory)
@@ -118,7 +124,6 @@ namespace JustTesting
                     pictureList.AddRange(GetPictures(file));
                 }
             }
-
             return pictureList;
         }
 
@@ -232,31 +237,65 @@ namespace JustTesting
             }
             else if (id == Resource.Id.nav_manage)
             {
-                TextView txtView = FindViewById<TextView>(Resource.Id.textView1);
-                string text = "";
-                text = pictureList.Count.ToString();
+                //TextView txtView = FindViewById<TextView>(Resource.Id.textView1);
+                //string text = "";
+                //text = pictureList.Count.ToString();
 
-                txtView.Text = text;
+                //txtView.Text = text;
             }
             else if (id == Resource.Id.nav_share)
             {
-                File picDir = Android.OS.Environment.GetExternalStoragePublicDirectory(Android.OS.Environment.DirectoryDownloads);
-                pictureList = new List<File>(GetPictures(picDir));
+                picDir = Android.OS.Environment.GetExternalStoragePublicDirectory(Android.OS.Environment.DirectoryDownloads);
+                pictureList = new List<ANUri>(GetPictures(picDir));
                 gallerygrid_1 = FindViewById<GridView>(Resource.Id.gridView1);
                 gallerygrid_1.SetColumnWidth(Resources.DisplayMetrics.WidthPixels / 3);
-                gallerygrid_1.Adapter = new ImageAdapter(this);
+                gallerygrid_1.Adapter = new ImageAdapter(this, ContentResolver);
                 gallerygrid_1.ItemClick += Gallerygrid_1_ItemClick;
             }
             else if (id == Resource.Id.nav_send)
             {
+                File picDir = Android.OS.Environment.GetExternalStoragePublicDirectory(Android.OS.Environment.DirectoryDownloads);
+                List<ANUri> templist = new List<ANUri>(GetPictures(picDir));
 
+                string uri = getThumbnailPath(Android.Provider.MediaStore.Images.Media.ExternalContentUri);
+                //string uri = getThumbnailPath(Android.Net.Uri.Parse(templist[0].ToString()));
+                ImageView imgview = FindViewById<ImageView>(Resource.Id.imageView_DEBUG);
+                imgview.SetImageURI(Android.Net.Uri.Parse(uri));
             }
 
             DrawerLayout drawer = FindViewById<DrawerLayout>(Resource.Id.drawer_layout);
             drawer.CloseDrawer(GravityCompat.Start);
             return true;
         }
-        
+
+        public String getThumbnailPath(Android.Net.Uri uri)
+        {
+            
+            String[] projection = { MediaStore.Images.Media.InterfaceConsts.Id };
+            String result = null;
+            ICursor cursor = ContentResolver.Query(uri, projection, null, null, null, null);
+            if (cursor == null)
+            {
+
+            }
+            int column_index = cursor.GetColumnIndexOrThrow(MediaStore.Images.ImageColumns.Id);
+
+            cursor.MoveToFirst();
+            long imageId = cursor.GetLong(column_index);
+            cursor.Close();
+
+            cursor = MediaStore.Images.Thumbnails.QueryMiniThumbnail(
+                    ContentResolver, imageId,
+                    ThumbnailKind.MiniKind,
+                    null);
+            if (cursor != null && cursor.Count > 0)
+            {
+                cursor.MoveToFirst();
+                result = cursor.GetString(cursor.GetColumnIndexOrThrow(MediaStore.Images.Thumbnails.Data));
+                cursor.Close();
+            }
+            return result;
+        }
         
 
     }
